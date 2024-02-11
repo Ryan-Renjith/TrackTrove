@@ -1,0 +1,18 @@
+{
+  "name": "tracktrove",
+  "version": "1.0.0",
+  "description": "Explore the world of racetracks and go-karting circuits in India with TrackTrove. Discover, review, and plan your next racing adventure. Contribute by adding new tracks and sharing your experiences. Built with Node.js, Express.js, MongoDB, TrackTrove delivers a fast and dynamic racing community experience.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1",
+    "nodemon": "^3.0.3"
+  }
+}
