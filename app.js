@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-const kartingTrack = require('./models/kartingtrack');
+const kartingTrack = require('./models/kartingTrack');
 
 const mongoose = require('mongoose')
 
