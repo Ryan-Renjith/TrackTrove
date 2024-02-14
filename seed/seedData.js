@@ -1,3 +1,5 @@
+//ChatGPT generated seed data for the database
+
 seedData = [
     // Mumbai, Maharashtra
     {
