@@ -1,27 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Details</title>
-</head>
-<body>
+<% layout('layouts/boilerplate') %>
     
-    <h1><%= track.name %></h1>
-    <h2><%= track.location %></h2>
-    <h3><%= track.description %></h3>
-    <h3>Price: <%= track.price %>/hr</h3>
+<h1><%= track.name %></h1>
+<h2><%= track.location %></h2>
+<h3><%= track.description %></h3>
+<h3>Price: <%= track.price %>/hr</h3>
 
-    <p>
-        <a href="/kartTracks/<%= track._id %>/edit">Edit</a>
-    </p>
-    <p>
-        <form action="/kartTracks/<%= track._id %>?_method=DELETE" method="POST">
-            <button>Delete</button>
-        </form>
-    </p>
+<p>
+    <a href="/kartTracks/<%= track._id %>/edit">Edit</a>
+</p>
+<p>
+    <form action="/kartTracks/<%= track._id %>?_method=DELETE" method="POST">
+        <button>Delete</button>
+    </form>
+</p>
 
-    <a href="/kartTracks">Back</a>
-
-</body>
-</html>
+<a href="/kartTracks">Back</a>

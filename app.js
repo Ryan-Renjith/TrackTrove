@@ -6,19 +6,23 @@ const methodOverride = require('method-override');
 
 const kartingTrack = require('./models/kartingTrack');
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+
+const engine = require('ejs-mate');
 
 mongoose.connect('mongodb://localhost:27017/track-trove');
 
 app.use(express.urlencoded({extended: true})); //For express to parse URL-encoded data in request body
 
-app.use(methodOverride('_method'));
+app.use(methodOverride('_method')); //app.use() mounts middleware functions
 
 const db = mongoose.connection;
 db.on("error", () => console.error("Error connecting to the database"));
 db.once("open", () => console.log("Connected to the database successfully"));
 
+
 app.set('view engine', 'ejs');
+app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 
 app.get('/', (req,res) => {

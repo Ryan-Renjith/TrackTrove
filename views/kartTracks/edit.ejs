@@ -1,36 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Track</title>
-</head>
-<body>
+<% layout('layouts/boilerplate') %>
 
-    <h1>Edit Track</h1>
+<h1>Edit Track</h1>
 
-    <form action="/kartTracks/<%= track._id %>?_method=PUT" method="POST">
-        <div>
-            <label for="name">Name: </label>
-            <input type="text" id="name" name="kartingTrack[name]" value="<%= track.name %>">
-        </div>
-        <div>
-            <label for="location">Location: </label>
-            <input type="text" id="location" name="kartingTrack[location]" value="<%= track.location %>">
-        </div>
-        <div>
-            <label for="description">Description: </label>
-            <input type="text" id="description" name="kartingTrack[description]" value="<%= track.description %>">
-        </div>
-        <div>
-            <label for="price">Price</label>
-            <input type="text" id="price" name="kartingTrack[price]" value="<%= track.price %>">/hr
-        </div>
+<form action="/kartTracks/<%= track._id %>?_method=PUT" method="POST">
+    <div>
+        <label for="name">Name: </label>
+        <input type="text" id="name" name="kartingTrack[name]" value="<%= track.name %>">
+    </div>
+    <div>
+        <label for="location">Location: </label>
+        <input type="text" id="location" name="kartingTrack[location]" value="<%= track.location %>">
+    </div>
+    <div>
+        <label for="description">Description: </label>
+        <input type="text" id="description" name="kartingTrack[description]" value="<%= track.description %>">
+    </div>
+    <div>
+        <label for="price">Price</label>
+        <input type="text" id="price" name="kartingTrack[price]" value="<%= track.price %>">/hr
+    </div>
 
-        <button>Update Track</button>
-    </form>
+    <button>Update Track</button>
+</form>
 
-    <a href="/kartTracks/<%= track._id %>">Back</a>
+<a href="/kartTracks/<%= track._id %>">Back</a>
     
-</body>
-</html>

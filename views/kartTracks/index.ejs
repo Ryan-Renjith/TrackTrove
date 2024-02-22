@@ -1,21 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karting Tracks</title>
-</head>
-<body>
+<% layout('layouts/boilerplate') %>
     
-    <h1>Go-Kart Tracks</h1>
+<h1>Go-Kart Tracks</h1>
 
-    <a href="/kartTracks/new">Add new track</a>
-
-    <ul>
-        <% for(let tracks of kartingTracks) { %>
-        <li><a href="/kartTracks/<%= tracks._id %>"><%= tracks.name %></a></li>
-        <% } %>
-    </ul>
-
-</body>
-</html>
+<ul>
+    <% for(let tracks of kartingTracks) { %>
+    <li><a href="/kartTracks/<%= tracks._id %>"><%= tracks.name %></a></li>
+    <% } %>
+</ul>
