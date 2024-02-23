@@ -18,7 +18,8 @@ const seedDb = async () => {
             name: element.name,
             location: element.location,
             description : element.description,
-            price: element.price
+            price: element.price,
+            image: element.image
         });
 
         await track.save();

@@ -16,6 +16,8 @@ app.use(express.urlencoded({extended: true})); //For express to parse URL-encode
 
 app.use(methodOverride('_method')); //app.use() mounts middleware functions
 
+app.use('/images',express.static('images')); //serve static files(images) located in the images folder
+
 const db = mongoose.connection;
 db.on("error", () => console.error("Error connecting to the database"));
 db.once("open", () => console.log("Connected to the database successfully"));
