@@ -1,9 +1,30 @@
 <% layout('layouts/boilerplate') %>
     
-<h1>Go-Kart Tracks</h1>
+<h1 class="d-flex justify-content-center">Go-Kart Tracks</h1>
 
-<ul>
+<div class="d-flex align-items-center flex-column">
     <% for(let tracks of kartingTracks) { %>
-    <li><a href="/kartTracks/<%= tracks._id %>"><%= tracks.name %></a></li>
+
+        <div class="card mb-3" style="max-width: 40rem;">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="<%= tracks.image %>" class="img-fluid rounded-start" alt="...">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title"><%= tracks.name %></h5>
+                  <p class="card-text"><%= tracks.description %></p>
+                  <p class="card-text"><small class="text-body-secondary"><%= tracks.location %></small></p>
+                  <a class="btn btn-primary" href="/kartTracks/<%= tracks._id %>">View <%= tracks.name %></a>
+                </div>
+              </div>
+            </div>
+          </div>
+    
     <% } %>
-</ul>
+</div>
+
+
+
+
+

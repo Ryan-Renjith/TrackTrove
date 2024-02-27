@@ -1,27 +1,51 @@
 <% layout('layouts/boilerplate') %>
 
-<h1>Edit Track</h1>
+<div class="row">
+    <div class="col-6 offset-3"> <%# Total 12 cols in css grid system. Col of length 6 and offset 3 to center it %>
+        <h1 class="text-center">Edit Track</h1>
 
-<form action="/kartTracks/<%= track._id %>?_method=PUT" method="POST">
-    <div>
-        <label for="name">Name: </label>
-        <input type="text" id="name" name="kartingTrack[name]" value="<%= track.name %>">
-    </div>
-    <div>
-        <label for="location">Location: </label>
-        <input type="text" id="location" name="kartingTrack[location]" value="<%= track.location %>">
-    </div>
-    <div>
-        <label for="description">Description: </label>
-        <input type="text" id="description" name="kartingTrack[description]" value="<%= track.description %>">
-    </div>
-    <div>
-        <label for="price">Price</label>
-        <input type="text" id="price" name="kartingTrack[price]" value="<%= track.price %>">/hr
-    </div>
+        <form class="mb-3" action="/kartTracks/<%= track._id %>?_method=PUT" method="POST">
+        <div class="mb-3">
+            <label class="form-label" for="name">Name</label>
+            <input class="form-control" type="text" id="name" name="kartingTrack[name]" value="<%= track.name %>">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label" for="location">Location</label>
+            <input class="form-control" type="text" id="location" name="kartingTrack[location]" value="<%= track.location %>">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label" for="description">Description</label>
+            <textarea class="form-control" type="text" id="description" name="kartingTrack[description]"><%= track.description %></textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label for="image" class="form-label">Image URL</label>
+            <div class="input-group">
+                <span class="input-group-text" id="image">../images/kartTracks/</span>
+                <input type="text" class="form-control" id="image" aria-describedby="image" name="kartingTrack[image]" value="<%= track.image %>">
+                <span class="input-group-text">.png</span>
+            </div>
+        </div>
 
-    <button>Update Track</button>
-</form>
+        <div class="mb-4">
+            <label class="form-label" for="price">Price</label>
+            <div class="input-group">
+                <span class="input-group-text" id="price">&#8377;</span>
+                <input type="text" class="form-control" placeholder="0.00" aria-label="price" 
+                    aria-describedby="price" name="kartingTrack[price]" id="price" value="<%= track.price %>">
+                <span class="input-group-text">/hr</span>
+            </div>
+        </div>  
+        
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-info col-12">Update Track</button>
+        </div>
+        </form>
 
-<a href="/kartTracks/<%= track._id %>">Back</a>
+        <a href="/kartTracks/<%= track._id %>" class="btn btn-secondary col-12 mb-5">Back</a>
+
+    </div>
+</div>
     

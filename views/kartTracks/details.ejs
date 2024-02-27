@@ -1,18 +1,31 @@
 <% layout('layouts/boilerplate') %>
-    
-<h1><%= track.name %></h1>
-<h2><%= track.location %></h2>
-<h3><%= track.description %></h3>
-<h3>Price: <%= track.price %>/hr</h3>
-<img src="<%= track.image %>" alt="track-image" style="height: 500px">
 
-<p>
-    <a href="/kartTracks/<%= track._id %>/edit">Edit</a>
-</p>
-<p>
-    <form action="/kartTracks/<%= track._id %>?_method=DELETE" method="POST">
-        <button>Delete</button>
-    </form>
-</p>
+<h1 class="my-3 text-center"><%= track.name %></h1>
 
-<a href="/kartTracks">Back</a>
+<div class="row mb-5">
+    <div class="col-8 offset-2">
+        <div class="card">
+            <img src="<%= track.image %>" class="card-img-top" alt="track-image">
+            <div class="card-body">
+              <h5 class="card-title"><%= track.name %></h5>
+              <p class="card-text"><%= track.description %></p>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item text-muted"><%= track.location %></li>
+              <li class="list-group-item">&#8377;<%= track.price %>/hr</li>
+            </ul>
+            <div class="d-flex">
+                <div class="card-body">
+                    <a href="/kartTracks" class="btn btn-secondary">Back</a>
+                </div>
+                <div class="card-body d-flex justify-content-end">
+                    <a href="/kartTracks/<%= track._id %>/edit" class="btn btn-info mx-3">Edit</a>
+                    <form action="/kartTracks/<%= track._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>   
+          </div>
+    </div>
+</div>
+

@@ -42,6 +42,7 @@ app.get('/kartTracks/new', (req,res) => {
 
 app.post('/kartTracks', async (req,res) => {
     const newTrack = new kartingTrack(req.body.kartingTrack);
+    newTrack.image = `../images/kartTracks/${newTrack.image}.png`;
     await newTrack.save();
     res.redirect(`/kartTracks/${newTrack._id}`);
 })

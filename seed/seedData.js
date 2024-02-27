@@ -142,7 +142,7 @@ seedData = [
         location: 'Ahmedabad, Gujarat',
         description: 'Race through the greenway at Gujarat Greenway Karting for a scenic adventure!',
         price: '520',
-        image: '../images/kartTracks/SpeedyRacersGujaratGreenwayKarting.png'
+        image: '../images/kartTracks/GujaratGreenwayKarting.png'
     },
     
     // Chandigarh, Punjab
