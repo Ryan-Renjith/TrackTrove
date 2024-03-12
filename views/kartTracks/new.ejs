@@ -4,28 +4,52 @@
     <div class="col-6 offset-3"> <%# Total 12 cols in css grid system. Col of length 6 and offset 3 to center it %>
         <h1 class="text-center">New Track</h1>
 
-        <form class="mb-3" action="/kartTracks" method="POST">
+        <form class="mb-3 validatedForm" action="/kartTracks" method="POST" novalidate>
         <div class="mb-3">
             <label class="form-label" for="name">Name</label>
-            <input class="form-control" type="text" id="name" name="kartingTrack[name]">
+            <input class="form-control" type="text" id="name" name="kartingTrack[name]" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                This field is required!
+            </div>
         </div>
         
         <div class="mb-3">
             <label class="form-label" for="location">Location</label>
-            <input class="form-control" type="text" id="location" name="kartingTrack[location]">
+            <input class="form-control" type="text" id="location" name="kartingTrack[location]" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                This field is required!
+            </div>
         </div>
         
         <div class="mb-3">
             <label class="form-label" for="description">Description</label>
-            <textarea class="form-control" type="text" id="description" name="kartingTrack[description]"></textarea>
+            <textarea class="form-control" type="text" id="description" name="kartingTrack[description]" required></textarea>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                This field is required!
+            </div>
         </div>
         
         <div class="mb-3">
             <label for="image" class="form-label">Image URL</label>
             <div class="input-group">
                 <span class="input-group-text" id="image">../images/kartTracks/</span>
-                <input type="text" class="form-control" id="image" aria-describedby="image" name="kartingTrack[image]">
+                <input type="text" class="form-control" id="image" aria-describedby="image" name="kartingTrack[image]" required>
                 <span class="input-group-text">.png</span>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    This field is required!
+                </div>
             </div>
         </div>
 
@@ -34,8 +58,14 @@
             <div class="input-group">
                 <span class="input-group-text" id="price">&#8377;</span>
                 <input type="text" class="form-control" placeholder="0.00" aria-label="price" 
-                    aria-describedby="price" name="kartingTrack[price]" id="price">
+                    aria-describedby="price" name="kartingTrack[price]" id="price" required>
                 <span class="input-group-text">/hr</span>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    This field is required!
+                </div>
             </div>
         </div>  
         
