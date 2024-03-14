@@ -5,6 +5,9 @@ const app = express();
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/expressError');
 
+//const Joi = require('joi'); Not needed here because when exporting the kartTrackSchema all functions come with it attached to the object and we have required Joi in the schemas file.
+const {kartTrackSchema} = require('./schemas.js'); //Destructuring because we might have multiple schemas in the future.
+
 const methodOverride = require('method-override');
 
 const kartingTrack = require('./models/kartingTrack');
@@ -30,6 +33,17 @@ app.set('view engine', 'ejs');
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 
+const validateSchema = (req,res,next) => {   //schema validation function middleware. Not using app.use since we do not want this middleware to run for every request.
+    const {error} = kartTrackSchema.validate(req.body);   //server side validation if bypassed the client side validations via postman.
+    if(error) {
+        const msg = error.details.map(elem => elem.message).join(',');
+        throw new ExpressError(msg, 400);
+    }
+    else {
+        next();
+    }
+}
+
 app.get('/', (req,res) => {
     res.render('home');
 });
@@ -43,8 +57,7 @@ app.get('/kartTracks/new', (req,res) => {
     res.render('kartTracks/new');
 });
 
-app.post('/kartTracks', catchAsync(async (req,res) => {
-    if(!req.body.kartingTrack) throw new ExpressError('Invalid track data', 400);
+app.post('/kartTracks', validateSchema, catchAsync(async (req,res) => {
     const newTrack = new kartingTrack(req.body.kartingTrack);
     newTrack.image = `../images/kartTracks/${newTrack.image}.png`;
     await newTrack.save();
@@ -61,7 +74,7 @@ app.get('/kartTracks/:id/edit', catchAsync(async (req,res) => {
     res.render('kartTracks/edit', {track});
 }));
 
-app.put('/kartTracks/:id', catchAsync(async (req,res) => {
+app.put('/kartTracks/:id', validateSchema, catchAsync(async (req,res) => {
     const {id} = req.params;
     const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
     res.redirect(`/kartTracks/${track._id}`);
