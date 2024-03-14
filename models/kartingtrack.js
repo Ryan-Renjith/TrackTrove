@@ -5,7 +5,7 @@ const KartingTrackSchema = new Schema({
     name: String,
     location: String,
     description : String,
-    price: String,
+    price: Number,
     image:String
 });
 

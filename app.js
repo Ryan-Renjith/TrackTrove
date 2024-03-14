@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
+const catchAsync = require('./utils/catchAsync');
+const ExpressError = require('./utils/expressError');
+
 const methodOverride = require('method-override');
 
 const kartingTrack = require('./models/kartingTrack');
@@ -31,42 +34,52 @@ app.get('/', (req,res) => {
     res.render('home');
 });
 
-app.get('/kartTracks', async (req,res) => {         //The route for which this functionality
+app.get('/kartTracks', catchAsync(async (req,res) => {         //The route for which this functionality
     const kartingTracks = await kartingTrack.find({});
     res.render('kartTracks/index', {kartingTracks});//The file that needs to be rendered when this route is accessed
-});
+}));
 
 app.get('/kartTracks/new', (req,res) => {
     res.render('kartTracks/new');
 });
 
-app.post('/kartTracks', async (req,res) => {
+app.post('/kartTracks', catchAsync(async (req,res) => {
+    if(!req.body.kartingTrack) throw new ExpressError('Invalid track data', 400);
     const newTrack = new kartingTrack(req.body.kartingTrack);
     newTrack.image = `../images/kartTracks/${newTrack.image}.png`;
     await newTrack.save();
     res.redirect(`/kartTracks/${newTrack._id}`);
-})
+}));
 
-app.get('/kartTracks/:id', async (req,res) => {
+app.get('/kartTracks/:id', catchAsync(async (req,res) => {
     const track = await kartingTrack.findById(req.params.id);
     res.render('kartTracks/details', {track});
-});
+}));
 
-app.get('/kartTracks/:id/edit', async (req,res) => {
+app.get('/kartTracks/:id/edit', catchAsync(async (req,res) => {
     const track = await kartingTrack.findById(req.params.id);
     res.render('kartTracks/edit', {track});
-})
+}));
 
-app.put('/kartTracks/:id', async (req,res) => {
+app.put('/kartTracks/:id', catchAsync(async (req,res) => {
     const {id} = req.params;
     const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
     res.redirect(`/kartTracks/${track._id}`);
-})
+}));
 
-app.delete('/kartTracks/:id', async (req,res) => {
+app.delete('/kartTracks/:id', catchAsync(async (req,res) => {
     const {id} = req.params;
     await kartingTrack.findByIdAndDelete(id);
     res.redirect('/kartTracks');
+}));
+
+app.all('*', (req,res,next) => {
+    next(new ExpressError('Page not found', 404)); //when next() is passed with an error object, it calls the next error handling middleware. It knows new ExpressError is an error object since the class is extended from the inbuild Error class. If no objects or arguments are passed, it takes control to any of the next middleware.
+})
+
+app.use((err,req,res,next) => {                 //error handling middleware
+    const {statusCode = 500, message = 'Something went wrong'} = err;
+    res.status(statusCode).render('error', {statusCode, message});
 })
 
 app.listen(3000, () => {
