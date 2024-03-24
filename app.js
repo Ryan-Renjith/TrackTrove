@@ -6,11 +6,12 @@ const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/expressError');
 
 //const Joi = require('joi'); Not needed here because when exporting the kartTrackSchema all functions come with it attached to the object and we have required Joi in the schemas file.
-const {kartTrackSchema} = require('./schemas.js'); //Destructuring because we might have multiple schemas in the future.
+const {kartTrackSchema, reviewSchema} = require('./schemas.js'); //Destructuring because we might have multiple schemas in the future.
 
 const methodOverride = require('method-override');
 
-const kartingTrack = require('./models/kartingTrack');
+const kartingTrack = require('./models/kartingtrack.js');
+const Review = require('./models/review.js');
 
 const mongoose = require('mongoose');
 
@@ -44,6 +45,17 @@ const validateSchema = (req,res,next) => {   //schema validation function middle
     }
 }
 
+const validateReview = (req,res,next) => {
+    const {error} = reviewSchema.validate(req.body);
+    if(error) {
+        const msg = error.details.map(elem => elem.message).join(',');
+        throw new ExpressError(msg, 400);
+    }
+    else {
+        next();
+    }
+}
+
 app.get('/', (req,res) => {
     res.render('home');
 });
@@ -65,7 +77,7 @@ app.post('/kartTracks', validateSchema, catchAsync(async (req,res) => {
 }));
 
 app.get('/kartTracks/:id', catchAsync(async (req,res) => {
-    const track = await kartingTrack.findById(req.params.id);
+    const track = await kartingTrack.findById(req.params.id).populate('reviews'); //populate the reviews field in each kartingtrack in place of the review object ids from the reviews collection in the database
     res.render('kartTracks/details', {track});
 }));
 
@@ -84,6 +96,24 @@ app.delete('/kartTracks/:id', catchAsync(async (req,res) => {
     const {id} = req.params;
     await kartingTrack.findByIdAndDelete(id);
     res.redirect('/kartTracks');
+}));
+
+app.delete('/kartTracks/:id/reviews/:reviewId', catchAsync(async (req,res) => {
+    const {id, reviewId} = req.params;
+    await kartingTrack.findByIdAndUpdate(id, { $pull: { reviews: reviewId}});  //The $pull operator removes from an existing array all instances of a value or values that match a specified condition.
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/kartTracks/${id}`);
+}));
+
+app.post('/kartTracks/:id/reviews', validateReview, catchAsync(async (req,res) => {
+    const track = await kartingTrack.findById(req.params.id);
+    const review = new Review(req.body.review);
+    track.reviews.push(review);
+    
+    await review.save();
+    await track.save();
+
+    res.redirect(`/kartTracks/${track._id}`);
 }));
 
 app.all('*', (req,res,next) => {

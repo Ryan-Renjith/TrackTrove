@@ -1,9 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
-<h1 class="my-3 text-center"><%= track.name %></h1>
-
-<div class="row mb-5">
-    <div class="col-8 offset-2">
+<div class="row mb-5 mt-5">
+    <div class="col-6 offset-1">
         <div class="card">
             <img src="<%= track.image %>" class="card-img-top" alt="track-image">
             <div class="card-body">
@@ -27,5 +25,44 @@
             </div>   
           </div>
     </div>
+
+    <div class="col-3 offset-1">
+        <h2 class="my-3">Leave a Review</h2>
+
+          <form action="/kartTracks/<%= track._id %>/reviews" method="POST" class="mb-3 validatedForm" novalidate>
+            <div>
+                <label for="rating" class="form-label">Rating</label>
+                <input type="range" class="form-range" min="0" max="5" id="rating" name="review[rating]">
+            </div>
+            <div>
+                <label class="form-label" for="body">Review</label>
+                <textarea class="form-control" name="review[body]" id="body" cols="30" rows="3" required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    This field is required!
+                </div>
+            </div>
+            <div class=" d-flex justify-content-end">
+                <button class="btn btn-success mt-3">Submit</button>
+            </div>
+          </form>
+
+          <% for(let review of track.reviews) {%>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Rating: <%= review.rating %></h5>
+                    <p class="card-text"><b>Review: </b><%= review.body %></p>
+                    <form action="/kartTracks/<%= track._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
 </div>
 
