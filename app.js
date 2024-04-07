@@ -2,16 +2,16 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-const catchAsync = require('./utils/catchAsync');
-const ExpressError = require('./utils/expressError');
-
-//const Joi = require('joi'); Not needed here because when exporting the kartTrackSchema all functions come with it attached to the object and we have required Joi in the schemas file.
-const {kartTrackSchema, reviewSchema} = require('./schemas.js'); //Destructuring because we might have multiple schemas in the future.
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const methodOverride = require('method-override');
 
-const kartingTrack = require('./models/kartingtrack.js');
-const Review = require('./models/review.js');
+const catchAsync = require('./utils/catchAsync');
+const ExpressError = require('./utils/expressError');
+
+const kartTracks = require('./routes/kartTracks.js');
+const reviews = require('./routes/reviews.js');
 
 const mongoose = require('mongoose');
 
@@ -23,7 +23,21 @@ app.use(express.urlencoded({extended: true})); //For express to parse URL-encode
 
 app.use(methodOverride('_method')); //app.use() mounts middleware functions
 
-app.use('/images',express.static('images')); //serve static files(images) located in the images folder
+app.use(express.static(path.join(__dirname, 'public'))); //serving static files in the public directory
+
+const sessionConfig = {
+    secret: 'needabettersecret',
+    resave: false,
+    saveUnitialized: true,
+    cookie: {
+        httpOnly: true, //security measure
+        expires: Date.now() + (1000 * 60 * 60 * 24 * 7), //session cookie expires in a week (Date.now() is in milliseconds)
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+
+app.use(session(sessionConfig));
+app.use(flash());
 
 const db = mongoose.connection;
 db.on("error", () => console.error("Error connecting to the database"));
@@ -34,87 +48,21 @@ app.set('view engine', 'ejs');
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 
-const validateSchema = (req,res,next) => {   //schema validation function middleware. Not using app.use since we do not want this middleware to run for every request.
-    const {error} = kartTrackSchema.validate(req.body);   //server side validation if bypassed the client side validations via postman.
-    if(error) {
-        const msg = error.details.map(elem => elem.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    else {
-        next();
-    }
-}
+app.use((req,res,next) => {     //On every route, we will now have access to the flash message based on the key in the locals variable in the templates
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
 
-const validateReview = (req,res,next) => {
-    const {error} = reviewSchema.validate(req.body);
-    if(error) {
-        const msg = error.details.map(elem => elem.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    else {
-        next();
-    }
-}
+    next();
+})
+
 
 app.get('/', (req,res) => {
     res.render('home');
 });
 
-app.get('/kartTracks', catchAsync(async (req,res) => {         //The route for which this functionality
-    const kartingTracks = await kartingTrack.find({});
-    res.render('kartTracks/index', {kartingTracks});//The file that needs to be rendered when this route is accessed
-}));
+app.use('/kartTracks', kartTracks);
+app.use('/kartTracks/:id/reviews', reviews); //mergeParams in Router is required to get access to :id for kartTracks
 
-app.get('/kartTracks/new', (req,res) => {
-    res.render('kartTracks/new');
-});
-
-app.post('/kartTracks', validateSchema, catchAsync(async (req,res) => {
-    const newTrack = new kartingTrack(req.body.kartingTrack);
-    newTrack.image = `../images/kartTracks/${newTrack.image}.png`;
-    await newTrack.save();
-    res.redirect(`/kartTracks/${newTrack._id}`);
-}));
-
-app.get('/kartTracks/:id', catchAsync(async (req,res) => {
-    const track = await kartingTrack.findById(req.params.id).populate('reviews'); //populate the reviews field in each kartingtrack in place of the review object ids from the reviews collection in the database
-    res.render('kartTracks/details', {track});
-}));
-
-app.get('/kartTracks/:id/edit', catchAsync(async (req,res) => {
-    const track = await kartingTrack.findById(req.params.id);
-    res.render('kartTracks/edit', {track});
-}));
-
-app.put('/kartTracks/:id', validateSchema, catchAsync(async (req,res) => {
-    const {id} = req.params;
-    const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
-    res.redirect(`/kartTracks/${track._id}`);
-}));
-
-app.delete('/kartTracks/:id', catchAsync(async (req,res) => {
-    const {id} = req.params;
-    await kartingTrack.findByIdAndDelete(id);
-    res.redirect('/kartTracks');
-}));
-
-app.delete('/kartTracks/:id/reviews/:reviewId', catchAsync(async (req,res) => {
-    const {id, reviewId} = req.params;
-    await kartingTrack.findByIdAndUpdate(id, { $pull: { reviews: reviewId}});  //The $pull operator removes from an existing array all instances of a value or values that match a specified condition.
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/kartTracks/${id}`);
-}));
-
-app.post('/kartTracks/:id/reviews', validateReview, catchAsync(async (req,res) => {
-    const track = await kartingTrack.findById(req.params.id);
-    const review = new Review(req.body.review);
-    track.reviews.push(review);
-    
-    await review.save();
-    await track.save();
-
-    res.redirect(`/kartTracks/${track._id}`);
-}));
 
 app.all('*', (req,res,next) => {
     next(new ExpressError('Page not found', 404)); //when next() is passed with an error object, it calls the next error handling middleware. It knows new ExpressError is an error object since the class is extended from the inbuild Error class. If no objects or arguments are passed, it takes control to any of the next middleware.
