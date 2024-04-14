@@ -4,6 +4,8 @@ const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/expressError');
 
+const {isLoggedIn} = require('../middleware.js');
+
 //const Joi = require('joi'); Not needed here because when exporting the kartTrackSchema all functions come with it attached to the object and we have required Joi in the schemas file.
 const {kartTrackSchema} = require('../schemas.js'); //Destructuring because we might have multiple schemas in the future.
 
@@ -27,11 +29,11 @@ router.get('/', catchAsync(async (req,res) => {         //The route for which th
     res.render('kartTracks/index', {kartingTracks});//The file that needs to be rendered when this route is accessed
 }));
 
-router.get('/new', (req,res) => {
+router.get('/new', isLoggedIn, (req,res) => {
     res.render('kartTracks/new');
 });
 
-router.post('/', validateSchema, catchAsync(async (req,res) => {
+router.post('/', isLoggedIn, validateSchema, catchAsync(async (req,res) => {
     const newTrack = new kartingTrack(req.body.kartingTrack);
     newTrack.image = `../images/kartTracks/${newTrack.image}.png`;
     await newTrack.save();
@@ -49,7 +51,7 @@ router.get('/:id', catchAsync(async (req,res) => {
     res.render('kartTracks/details', {track});
 }));
 
-router.get('/:id/edit', catchAsync(async (req,res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req,res) => {
     const track = await kartingTrack.findById(req.params.id);
     if(!track)
     {
@@ -59,14 +61,14 @@ router.get('/:id/edit', catchAsync(async (req,res) => {
     res.render('kartTracks/edit', {track});
 }));
 
-router.put('/:id', validateSchema, catchAsync(async (req,res) => {
+router.put('/:id', isLoggedIn, validateSchema, catchAsync(async (req,res) => {
     const {id} = req.params;
     const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
     req.flash('success', `Successfully updated ${track.name}!`);
     res.redirect(`/kartTracks/${track._id}`);
 }));
 
-router.delete('/:id', catchAsync(async (req,res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req,res) => {
     const {id} = req.params;
     const track = await kartingTrack.findByIdAndDelete(id);
     req.flash('success', `Successfully deleted ${track.name}!`);
