@@ -8,6 +8,10 @@ const KartingTrackSchema = new Schema({
     description : String,
     price: Number,
     image:String,
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     reviews: [
         {
             type: Schema.Types.ObjectId,

@@ -1,4 +1,4 @@
-const kartingTrack = require('../models/kartingTrack');
+const kartingTrack = require('../models/kartingtrack');
 const seedData = require('./seedData');
 
 const mongoose = require('mongoose');
@@ -15,6 +15,7 @@ const seedDb = async () => {
     for(let element of seedData)
     {
         const track = new kartingTrack({
+            author: '661536309e55243a15f52a4a',
             name: element.name,
             location: element.location,
             description : element.description,
