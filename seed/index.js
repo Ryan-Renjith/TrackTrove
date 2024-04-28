@@ -15,12 +15,20 @@ const seedDb = async () => {
     for(let element of seedData)
     {
         const track = new kartingTrack({
-            author: '661536309e55243a15f52a4a',
             name: element.name,
             location: element.location,
             description : element.description,
             price: element.price,
-            image: element.image
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/delrzmfou/image/upload/v1714051384/TrackTrove/BrahmaputraKartSpeedway_dsfurp.png',
+                    filename: 'TrackTrove/BrahmaputraKartSpeedway_dsfurp'
+                },
+                {
+                    url: 'https://res.cloudinary.com/delrzmfou/image/upload/v1714052462/TrackTrove/FastLaneCircuit_djsoqq.png',
+                    filename: 'TrackTrove/FastLaneCircuit_djsoqq'
+                }
+            ]
         });
 
         await track.save();

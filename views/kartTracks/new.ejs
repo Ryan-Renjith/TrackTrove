@@ -4,7 +4,7 @@
     <div class="col-6 offset-3"> <%# Total 12 cols in css grid system. Col of length 6 and offset 3 to center it %>
         <h1 class="text-center">New Track</h1>
 
-        <form class="mb-3 validatedForm" action="/kartTracks" method="POST" novalidate>
+        <form class="mb-3 validatedForm" action="/kartTracks" method="POST" novalidate enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label" for="name">Name</label>
             <input class="form-control" type="text" id="name" name="kartingTrack[name]" required>
@@ -37,20 +37,10 @@
                 This field is required!
             </div>
         </div>
-        
+
         <div class="mb-3">
-            <label for="image" class="form-label">Image URL</label>
-            <div class="input-group">
-                <span class="input-group-text" id="image">../images/kartTracks/</span>
-                <input type="text" class="form-control" id="image" aria-describedby="image" name="kartingTrack[image]" required>
-                <span class="input-group-text">.png</span>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
-                <div class="invalid-feedback">
-                    This field is required!
-                </div>
-            </div>
+            <label for="formFileMultiple" class="form-label">Upload Images</label>
+            <input class="form-control" type="file" name="kartingTrack[images]" id="formFileMultiple" multiple>
         </div>
 
         <div class="mb-4">

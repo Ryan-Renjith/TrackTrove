@@ -1,6 +1,7 @@
 //Controller file in MVC approach
 
 const kartingTrack = require('../models/kartingtrack.js');
+const {cloudinary} = require('../cloudinary');
 
 module.exports.index = async (req,res) => {         //The route for which this functionality
     const kartingTracks = await kartingTrack.find({});
@@ -13,7 +14,7 @@ module.exports.renderNewForm = (req,res) => {
 
 module.exports.createKartTrack = async (req,res) => {
     const newTrack = new kartingTrack(req.body.kartingTrack);
-    newTrack.image = `../images/kartTracks/${newTrack.image}.png`;
+    newTrack.images = req.files.map(f => ({url: f.path, filename: f.filename})); //create an array of objects with each object having properties url and filename. req.files coming from multer
     newTrack.author = req.user._id;
     await newTrack.save();
     req.flash('success', 'Successfully created a new karting track!');  //req.flash(key, message)
@@ -48,6 +49,15 @@ module.exports.renderEditForm = async (req,res) => {
 module.exports.updateKartTrack = async (req,res) => {
     const {id} = req.params;
     const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
+    const imgs = req.files.map(f => ({url: f.path, filename: f.filename}));
+    track.images.push(...imgs);
+    await track.save();
+    if(req.body.deleteImages) {
+        for(let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
+        await track.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}}); //pull from the images array where filename in deleteImages array
+    }
     req.flash('success', `Successfully updated ${track.name}!`);
     res.redirect(`/kartTracks/${track._id}`);
 }
