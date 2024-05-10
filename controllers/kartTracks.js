@@ -2,6 +2,7 @@
 
 const kartingTrack = require('../models/kartingtrack.js');
 const {cloudinary} = require('../cloudinary');
+const axios = require('axios');
 
 module.exports.index = async (req,res) => {         //The route for which this functionality
     const kartingTracks = await kartingTrack.find({});
@@ -14,6 +15,9 @@ module.exports.renderNewForm = (req,res) => {
 
 module.exports.createKartTrack = async (req,res) => {
     const newTrack = new kartingTrack(req.body.kartingTrack);
+    const mapBoxURL = `https://api.mapbox.com/search/geocode/v6/forward?q=${newTrack.location}&limit=1&access_token=${process.env.MAPBOX_TOKEN}`;
+    const response = await axios.get(mapBoxURL);
+    newTrack.geometry = response.data.features[0].geometry;
     newTrack.images = req.files.map(f => ({url: f.path, filename: f.filename})); //create an array of objects with each object having properties url and filename. req.files coming from multer
     newTrack.author = req.user._id;
     await newTrack.save();
@@ -49,6 +53,9 @@ module.exports.renderEditForm = async (req,res) => {
 module.exports.updateKartTrack = async (req,res) => {
     const {id} = req.params;
     const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
+    const mapBoxURL = `https://api.mapbox.com/search/geocode/v6/forward?q=${track.location}&limit=1&access_token=${process.env.MAPBOX_TOKEN}`;
+    const response = await axios.get(mapBoxURL);
+    track.geometry = response.data.features[0].geometry;
     const imgs = req.files.map(f => ({url: f.path, filename: f.filename}));
     track.images.push(...imgs);
     await track.save();
