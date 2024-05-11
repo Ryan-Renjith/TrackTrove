@@ -52,8 +52,9 @@ module.exports.renderEditForm = async (req,res) => {
 
 module.exports.updateKartTrack = async (req,res) => {
     const {id} = req.params;
+    const location = req.body.kartingTrack.location;
     const track = await kartingTrack.findByIdAndUpdate(id, {...req.body.kartingTrack});
-    const mapBoxURL = `https://api.mapbox.com/search/geocode/v6/forward?q=${track.location}&limit=1&access_token=${process.env.MAPBOX_TOKEN}`;
+    const mapBoxURL = `https://api.mapbox.com/search/geocode/v6/forward?q=${location}&limit=1&access_token=${process.env.MAPBOX_TOKEN}`;
     const response = await axios.get(mapBoxURL);
     track.geometry = response.data.features[0].geometry;
     const imgs = req.files.map(f => ({url: f.path, filename: f.filename}));

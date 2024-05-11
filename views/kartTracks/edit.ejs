@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
 <div class="row">
-    <div class="col-6 offset-3"> <%# Total 12 cols in css grid system. Col of length 6 and offset 3 to center it %>
+    <div class="col-md-6 offset-md-3 col-10 offset-1"> <%# Total 12 cols in css grid system. Col of length 6 and offset 3 to center it %>
         <h1 class="text-center">Edit Track</h1>
 
         <form class="mb-3 validatedForm" action="/kartTracks/<%= track._id %>?_method=PUT" method="POST" novalidate enctype="multipart/form-data">
