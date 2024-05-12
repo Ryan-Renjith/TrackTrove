@@ -21,6 +21,8 @@ const kartTrackRoutes = require('./routes/kartTracks.js');
 const reviewRoutes = require('./routes/reviews.js');
 const userRoutes = require('./routes/users.js');
 
+const mongoSanitize = require('express-mongo-sanitize');
+
 const mongoose = require('mongoose');
 
 const engine = require('ejs-mate');
@@ -32,6 +34,8 @@ app.use(express.urlencoded({extended: true})); //For express to parse URL-encode
 app.use(methodOverride('_method')); //app.use() mounts middleware functions
 
 app.use(express.static(path.join(__dirname, 'public'))); //serving static files in the public directory
+
+app.use(mongoSanitize());   //prevent mongo injection
 
 const db = mongoose.connection;
 db.on("error", () => console.error("Error connecting to the database"));
