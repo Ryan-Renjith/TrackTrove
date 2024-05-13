@@ -32,7 +32,7 @@ const engine = require('ejs-mate');
 
 const dbURL = process.env.DB_URL;
 
-mongoose.connect('mongodb://localhost:27017/track-trove');
+mongoose.connect(dbURL);
 
 app.use(express.urlencoded({extended: true})); //For express to parse URL-encoded data in request body
 
@@ -49,11 +49,13 @@ db.on("error", () => console.error("Error connecting to the database"));
 db.once("open", () => console.log("Connected to the database successfully"));
 
 
+const sessionSecret = process.env.SESSION_SECRET;
+
 const store = MongoStore.create({
     mongoUrl: dbURL,
     touchAfter: 24 * 60 * 60,   //(seconds) lazy session update. Dont update session for every refresh unless data is changed or once every 24 hours which is what we are mentioning in this line
     crypto: {
-        secret: 'needabettersecret'
+        secret: `${sessionSecret}`
     }
 });
 
@@ -63,8 +65,8 @@ store.on("error", function(e) {
 
 const sessionConfig = {
     store: store,
-    name: 'blackbox',   //a customized name for the cookie instead of the default 'connect.sid'
-    secret: 'needabettersecret',
+    name: `${sessionSecret}`,   //a customized name for the cookie instead of the default 'connect.sid'
+    secret: sessionSecret,
     resave: false,
     saveUnitialized: true,
     cookie: {
@@ -135,6 +137,8 @@ app.use((err,req,res,next) => {                 //error handling middleware
     res.status(statusCode).render('error', {statusCode, message});
 })
 
-app.listen(3000, () => {
+const port = process.env.PORT;
+
+app.listen(port, () => {
     console.log("Server listening on PORT 3000");
 });
