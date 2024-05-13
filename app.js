@@ -30,7 +30,7 @@ const mongoose = require('mongoose');
 
 const engine = require('ejs-mate');
 
-const dbURL = process.env.DB_URL;
+const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/track-trove';
 
 mongoose.connect(dbURL);
 
@@ -118,6 +118,11 @@ app.get('/fakeUser', async(req, res) => {
 */
 
 
+
+app.get('/', (req,res) => {
+    res.redirect('/home');
+});
+
 app.get('/home', (req,res) => {
     res.render('home');
 });
@@ -137,8 +142,8 @@ app.use((err,req,res,next) => {                 //error handling middleware
     res.status(statusCode).render('error', {statusCode, message});
 })
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log("Server listening on PORT 3000");
+    console.log(`Server listening on PORT ${port}`);
 });
