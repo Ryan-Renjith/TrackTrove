@@ -7,6 +7,8 @@ const path = require('path');
 const app = express();
 
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
 const flash = require('connect-flash');
 
 const methodOverride = require('method-override');
@@ -22,10 +24,13 @@ const reviewRoutes = require('./routes/reviews.js');
 const userRoutes = require('./routes/users.js');
 
 const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const mongoose = require('mongoose');
 
 const engine = require('ejs-mate');
+
+const dbURL = process.env.DB_URL;
 
 mongoose.connect('mongodb://localhost:27017/track-trove');
 
@@ -37,16 +42,34 @@ app.use(express.static(path.join(__dirname, 'public'))); //serving static files 
 
 app.use(mongoSanitize());   //prevent mongo injection
 
+app.use(helmet({contentSecurityPolicy: false}));    //The contentSecurityPolicy middleware is deactivated and it dictates from where resources such as scripts, styles and cdn's and api's can be included in our application. If it is activated then we also need to tell from which sites resources can be accessed and fed into our site. For more detailed info check PPT.
+
 const db = mongoose.connection;
 db.on("error", () => console.error("Error connecting to the database"));
 db.once("open", () => console.log("Connected to the database successfully"));
 
+
+const store = MongoStore.create({
+    mongoUrl: dbURL,
+    touchAfter: 24 * 60 * 60,   //(seconds) lazy session update. Dont update session for every refresh unless data is changed or once every 24 hours which is what we are mentioning in this line
+    crypto: {
+        secret: 'needabettersecret'
+    }
+});
+
+store.on("error", function(e) {
+    console.log("SESSION STORE ERROR!");
+});
+
 const sessionConfig = {
+    store: store,
+    name: 'blackbox',   //a customized name for the cookie instead of the default 'connect.sid'
     secret: 'needabettersecret',
     resave: false,
     saveUnitialized: true,
     cookie: {
-        httpOnly: true, //security measure
+        httpOnly: true, //security measure i.e. cookies are accessible only via http and through javascript
+        //secure: true  //This makes the cookies accessible only via HTTPS. Local host is not secure therefore it will break the code but when deploying, secure must be true so users can configure cookies only over a secure connection ie https
         expires: Date.now() + (1000 * 60 * 60 * 24 * 7), //session cookie expires in a week (Date.now() is in milliseconds)
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
